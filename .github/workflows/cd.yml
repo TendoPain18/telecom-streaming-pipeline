@@ -1,0 +1,32 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker application
+        run: docker compose build
+
+      - name: Create deployment package
+        run: |
+          tar -czf telecom-streaming-pipeline.tar.gz \
+            docker-compose.yml \
+            kafka \
+            metrics-api \
+            producer \
+            spark
+
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: telecom-streaming-pipeline
+          path: telecom-streaming-pipeline.tar.gz
